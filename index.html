@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rundown Rihlah Batch#5</title>
+
+  <!-- Styles -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #005c4b;
+    }
+    .rundown, .checklist {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 800px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #e0f2f1;
+    }
+    .checklist-columns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .checklist-column {
+      flex: 1 1 45%;
+      min-width: 300px;
+    }
+    .checklist ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .checklist li {
+      margin-bottom: 8px;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .checklist li:hover {
+      transform: scale(1.05);
+    }
+    .checklist li.checked {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .checklist input[type="checkbox"] {
+      margin-right: 10px;
+      pointer-events: none;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #005c4b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #007f66;
+    }
+    @media (max-width: 768px) {
+      .checklist-columns {
+        flex-direction: column;
+      }
+      .checklist-column {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+
+  <!-- jsPDF + html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <h1>Rundown Rihlah Batch#5</h1>
+  <h2>Berjuang dalam Sunyi, Bersinar dalam Ridha Ilahi</h2>
+
+  <div class="rundown" id="rundown-section">
+    <h3>📍 Lokasi: Waduk Sermo, Kulonprogo<br>📅 (Tanggal disesuaikan)<br>
+      👕 Dresscode: <br> - Baju putih & Sarung<br> - Jaket RH</h3>
+
+    <h4>Contoh Rundown (sesuaikan tanggal dan waktu)</h4>
+    <div class="table-responsive">
+      <table>
+        <tr><th>Waktu</th><th>Kegiatan</th><th>Keterangan</th><th>PJ</th></tr>
+        <tr><td>15.00 – 15.30</td><td>Cek alat & logistik</td><td>Persiapan sebelum berangkat</td><td>Perkap</td></tr>
+        <tr><td>15.30 – 16.00</td><td>Keberangkatan</td><td>Dari asrama Pesma</td><td>Transport/Acara</td></tr>
+        <tr><td>16.00 – 17.00</td><td>Perjalanan</td><td>Menuju Waduk Sermo</td><td>Acara</td></tr>
+        <tr><td>17.00 – 17.30</td><td>Mendirikan tenda</td><td>Pemasangan perlengkapan kemah</td><td>Perkap</td></tr>
+        <tr><td>17.30 – 18.30</td><td>Sholat Maghrib & Isya'</td><td>Berjamaah</td><td>—</td></tr>
+        <tr><td>18.30 – 19.00</td><td>Makan malam</td><td>Konsumsi bersama</td><td>Konsumsi</td></tr>
+        <tr><td>19.45 – 21.15</td><td>Saresehan</td><td>Acara malam</td><td>Acara</td></tr>
+        <tr><td>21.15 – 04.00</td><td>Istirahat</td><td>—</td><td>—</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="checklist" id="checklist-section">
+    <h3>📋 Checklist Kebutuhan</h3>
+    <div class="checklist-columns">
+      <div class="checklist-column">
+        <h4>🧍 Daftar Pribadi</h4>
+        <ul id="personal-checklist"></ul>
+      </div>
+      <div class="checklist-column">
+        <h4>👥 Daftar Kelompok</h4>
+        <ul id="group-checklist"></ul>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="downloadPDF()">Download PDF 📄</button>
+
+  <!-- Checklist script + PDF generator -->
+  <script>
+    // gunakan path relatif agar bekerja saat dihosting di GitHub Pages
+    const checklistUrl = "./checklist.json";
+
+    function loadChecklist() {
+      fetch(checklistUrl)
+        .then(response => response.json())
+        .then(data => {
+          renderChecklist('personal', data.personal);
+          renderChecklist('group', data.group);
+        })
+        .catch(error => {
+          console.error('Gagal memuat data checklist:', error);
+          const personal = document.getElementById('personal-checklist');
+          const group = document.getElementById('group-checklist');
+          personal.innerHTML = '<li>Gagal memuat data. Pastikan checklist.json tersedia di repo.</li>';
+          group.innerHTML = '<li>Gagal memuat data. Pastikan checklist.json tersedia di repo.</li>';
+        });
+    }
+
+    function renderChecklist(type, items) {
+      const ul = document.getElementById(`${type}-checklist`);
+      ul.innerHTML = '';
+
+      items.forEach((item, index) => {
+        const li = document.createElement('li');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+
+        const key = `${type}-${index}`;
+        const isChecked = localStorage.getItem(key) === 'true';
+
+        checkbox.checked = isChecked;
+        if (isChecked) li.classList.add('checked');
+
+        li.appendChild(checkbox);
+        li.append(document.createTextNode(item.item));
+
+        li.addEventListener('click', () => {
+          checkbox.checked = !checkbox.checked;
+          li.classList.toggle('checked');
+          localStorage.setItem(key, checkbox.checked);
+        });
+
+        ul.appendChild(li);
+      });
+    }
+
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const scale = 2;
+
+      // Clone rundown dan checklist
+      const rundown = document.getElementById('rundown-section').cloneNode(true);
+      const checklist = document.getElementById('checklist-section').cloneNode(true);
+
+      const wrapper = document.createElement('div');
+      wrapper.style.padding = '20px';
+      wrapper.style.backgroundColor = '#fff';
+      wrapper.appendChild(rundown);
+      wrapper.appendChild(checklist);
+
+      document.body.appendChild(wrapper);
+
+      await html2canvas(wrapper, {
+        scale: scale,
+        scrollY: -window.scrollY
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        const imgProps = doc.getImageProperties(imgData);
+        const imgRatio = imgProps.width / imgProps.height;
+        const pdfHeight = pageWidth / imgRatio;
+
+        doc.addImage(imgData, 'PNG', 0, 0, pageWidth, pdfHeight);
+        doc.save('Rundown-Rihlah-Batch5.pdf');
+      });
+
+      document.body.removeChild(wrapper);
+    }
+
+    window.addEventListener('DOMContentLoaded', loadChecklist);
+  </script>
+</body>
+</html>
