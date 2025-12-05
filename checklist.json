@@ -16,7 +16,7 @@
     { "item": "Sabun mandi", "checked": false },
     { "item": "Sabun muka", "checked": false },
     { "item": "Shampo", "checked": false },
-    { "item": "Sikat gigi & odol", "checked": false }
+    { "item": "Sikat & Pasta Gigi", "checked": false }
   ],
   "group": [
     { "item": "P3K (Medical KIT)", "checked": false },
@@ -28,7 +28,7 @@
     { "item": "Lampu (lampu kemah)", "checked": false },
     { "item": "Sepanduk", "checked": false },
     { "item": "Terpal", "checked": false },
-    { "item": "Teres bag", "checked": false },
+    { "item": "Trash bag", "checked": false },
     { "item": "Piring/mangkok", "checked": false },
     { "item": "Sendok", "checked": false },
     { "item": "Pisau (peralatan masak)", "checked": false },
